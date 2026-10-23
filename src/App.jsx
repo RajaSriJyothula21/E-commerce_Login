@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+
 import {
   AppBar,
   Toolbar,
@@ -31,6 +32,7 @@ import {
   EmailOutlined,
 } from "@mui/icons-material";
 
+// Material UI theme
 const theme = createTheme({
   palette: {
     primary: { main: "#4f46e5" },
@@ -39,11 +41,17 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: "'Inter', 'Roboto', sans-serif",
-    button: { textTransform: "none", fontWeight: 600 },
+    button: {
+      textTransform: "none",
+      fontWeight: 600,
+    },
   },
-  shape: { borderRadius: 12 },
+  shape: {
+    borderRadius: 12,
+  },
 });
 
+// Read saved email safely
 const getSavedLogin = (key) => {
   try {
     return JSON.parse(localStorage.getItem(key)) || {};
@@ -52,6 +60,7 @@ const getSavedLogin = (key) => {
   }
 };
 
+// Login card component
 function LoginCard({
   type,
   title,
@@ -65,23 +74,25 @@ function LoginCard({
   const [email, setEmail] = useState(
     saved.remember ? saved.email || "" : ""
   );
+
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(
     Boolean(saved.remember)
   );
+
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
 
+  // Handle form submission and redirect
   const handleSubmit = (e) => {
     e.preventDefault();
-    setMessage("");
 
-    // Save login preference and email, never the password.
+    // Save email only; never save the password
     if (remember) {
       localStorage.setItem(
         storageKey,
         JSON.stringify({
-          email,
+          email: email,
           remember: true,
         })
       );
@@ -89,11 +100,14 @@ function LoginCard({
       localStorage.removeItem(storageKey);
     }
 
-    // Demo only: connect your backend to authenticate.
-    setMessage(
-      `${type} form submitted. Connect your API to verify credentials.`
-    );
-    setPassword("");
+    // Redirect to the correct website
+    if (type === "Admin") {
+      window.location.href =
+        "https://e-commerce-customer-seven.vercel.app/";
+    } else if (type === "Customer") {
+      window.location.href =
+        "https://e-commerce-admin-xi-seven.vercel.app";
+    }
   };
 
   return (
@@ -111,13 +125,14 @@ function LoginCard({
       }}
     >
       <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+        {/* Login icon */}
         <Box
           sx={{
             width: 60,
             height: 60,
             borderRadius: 3,
             bgcolor: `${color}15`,
-            color,
+            color: color,
             display: "grid",
             placeItems: "center",
             mb: 3,
@@ -126,7 +141,12 @@ function LoginCard({
           <Icon sx={{ fontSize: 32 }} />
         </Box>
 
-        <Typography variant="h5" fontWeight={750} gutterBottom>
+        {/* Title */}
+        <Typography
+          variant="h5"
+          fontWeight={750}
+          gutterBottom
+        >
           {title}
         </Typography>
 
@@ -144,6 +164,7 @@ function LoginCard({
           </Alert>
         )}
 
+        {/* Login form */}
         <Box component="form" onSubmit={handleSubmit}>
           <TextField
             fullWidth
@@ -204,6 +225,7 @@ function LoginCard({
             }}
           />
 
+          {/* Remember email and forgot password */}
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -215,7 +237,9 @@ function LoginCard({
               control={
                 <Checkbox
                   checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
+                  onChange={(e) =>
+                    setRemember(e.target.checked)
+                  }
                   size="small"
                   color="primary"
                 />
@@ -234,7 +258,7 @@ function LoginCard({
               onClick={(e) => {
                 e.preventDefault();
                 setMessage(
-                  "Password reset should be handled by your backend."
+                  "Please use your account's password recovery process."
                 );
               }}
             >
@@ -242,6 +266,7 @@ function LoginCard({
             </Link>
           </Stack>
 
+          {/* Submit and redirect */}
           <Button
             type="submit"
             fullWidth
@@ -251,13 +276,17 @@ function LoginCard({
               py: 1.5,
               bgcolor: color,
               borderRadius: 2.5,
-              "&:hover": { bgcolor: color, filter: "brightness(0.9)" },
+              "&:hover": {
+                bgcolor: color,
+                filter: "brightness(0.9)",
+              },
             }}
           >
             Sign in as {type} →
           </Button>
         </Box>
 
+        {/* Bottom message */}
         <Typography
           variant="caption"
           color="text.secondary"
@@ -278,6 +307,7 @@ function LoginCard({
   );
 }
 
+// Main landing page
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -290,6 +320,7 @@ export default function App() {
             "radial-gradient(circle at 10% 5%, #e0e7ff 0, transparent 35%), linear-gradient(135deg, #f8fafc, #f1f5f9)",
         }}
       >
+        {/* Navbar */}
         <AppBar
           position="static"
           elevation={0}
@@ -299,15 +330,31 @@ export default function App() {
             borderBottom: "1px solid #e5e7eb",
           }}
         >
-          <Toolbar sx={{ maxWidth: 1100, width: "100%", mx: "auto" }}>
-            <ShoppingBag sx={{ color: "#4f46e5", mr: 1 }} />
-            <Typography variant="h6" fontWeight={800} sx={{ flexGrow: 1 }}>
+          <Toolbar
+            sx={{
+              maxWidth: 1100,
+              width: "100%",
+              mx: "auto",
+            }}
+          >
+            <ShoppingBag
+              sx={{ color: "#4f46e5", mr: 1 }}
+            />
+
+            <Typography
+              variant="h6"
+              fontWeight={800}
+              sx={{ flexGrow: 1 }}
+            >
               Shopora.
             </Typography>
+
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{ display: { xs: "none", sm: "block" } }}
+              sx={{
+                display: { xs: "none", sm: "block" },
+              }}
             >
               Your shopping, simplified.
             </Typography>
@@ -315,7 +362,14 @@ export default function App() {
         </AppBar>
 
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", pt: { xs: 6, md: 8 }, pb: 5 }}>
+          {/* Hero section */}
+          <Box
+            sx={{
+              textAlign: "center",
+              pt: { xs: 6, md: 8 },
+              pb: 5,
+            }}
+          >
             <Typography
               variant="overline"
               sx={{
@@ -335,13 +389,20 @@ export default function App() {
               sx={{
                 mt: 3,
                 fontWeight: 850,
-                fontSize: { xs: 32, sm: 44, md: 50 },
+                fontSize: {
+                  xs: 32,
+                  sm: 44,
+                  md: 50,
+                },
                 letterSpacing: "-1.5px",
                 lineHeight: 1.2,
               }}
             >
               One platform.{" "}
-              <Box component="span" sx={{ color: "#4f46e5" }}>
+              <Box
+                component="span"
+                sx={{ color: "#4f46e5" }}
+              >
                 Two experiences.
               </Box>
             </Typography>
@@ -355,11 +416,12 @@ export default function App() {
                 lineHeight: 1.8,
               }}
             >
-              Choose your portal to get started. Manage your store
-              or explore products made for you.
+              Choose your portal to get started. Manage your
+              store or explore products made for you.
             </Typography>
           </Box>
 
+          {/* Two login cards */}
           <Box
             sx={{
               display: "grid",
@@ -373,6 +435,7 @@ export default function App() {
               pb: 8,
             }}
           >
+            {/* Admin login */}
             <LoginCard
               type="Admin"
               title="Admin Login"
@@ -382,6 +445,7 @@ export default function App() {
               Icon={AdminPanelSettings}
             />
 
+            {/* Customer login */}
             <LoginCard
               type="Customer"
               title="Customer Login"
@@ -393,6 +457,7 @@ export default function App() {
           </Box>
         </Container>
 
+        {/* Footer */}
         <Box
           component="footer"
           sx={{
